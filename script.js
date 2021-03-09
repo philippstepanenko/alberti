@@ -11,6 +11,7 @@ init();
 
 // Движение диска
 var isMove;
+var isTouch;
 var start = {x: 0, y: 0};
 var stop = {x: 0, y: 0};
 
@@ -21,6 +22,14 @@ document.onmouseup = stopMove;
 
 canvas.onmousemove = move;
 
+// сенсорный дисплей
+//canvas.touchstart = startMove;
+canvas.addEventListener("touchstart",startMoveTouch);
+//document.touchend = stopMove;
+document.addEventListener("touchend",stopMoveTouch);
+//canvas.touchmove = move;
+canvas.addEventListener("touchmove", move);
+
 function div(a,b){
 	return (a - a % b) / b;
 }
@@ -30,22 +39,42 @@ function diffPair(a,b){
 }
 
 function move(e){
-	if(isMove){
-		var ta = -(canvas.width/2) + e.pageX - canvas.offsetLeft;
-		var tb = -(-(canvas.height/2) + e.pageY - canvas.offsetTop);
+  // мышь или тачскрин?
+	if(isMove || isTouch){
+    
+    if(isMove){
+      var x = e.pageX;
+      var y = e.pageY;
+    } else if(isTouch) {
+      var x = parseInt(e.touches[0].clientX);
+      var y = parseInt(e.touches[0].clientY);
+    }
+    console.log("x: " + (x-canvas.offsetLeft));
+    console.log("y: " + (y-canvas.offsetTop));
+		var ta = -(canvas.width/2) + x - canvas.offsetLeft;
+		var tb = -(-(canvas.height/2) + y - canvas.offsetTop);
 		
 		var angle = Math.atan2(ta,tb);
 
 		setKey(angle);
 	}
+
 }
 
 function startMove(e) {
-	isMove = true;
+  isMove = true;
 }
 
 function stopMove(e) {
-	isMove = false;
+  isMove = false;
+}
+
+function startMoveTouch(e) {
+  isTouch = true;
+}
+
+function stopMoveTouch(e) {
+  isTouch = false;
 }
 
 // Очистка canvas
